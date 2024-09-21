@@ -55,7 +55,6 @@ async def main():
 
     @dp.message(F.photo)
     async def modify_image(message: types.Message):
-        # Получаем изображение от пользователя
         await message.answer(f"Get this")
 
         bio1 = BytesIO()
@@ -63,20 +62,16 @@ async def main():
         await message.bot.download(message.photo[-1], bio1)
         bio1.seek(0)
     
-        # Открываем изображение с помощью Pillow
         image = Image.open(bio1)
     
-        # Создаем рисовальщик для наложения текста
         draw = ImageDraw.Draw(image)
         font = ImageFont.truetype('arial.ttf', 36)
         draw.text((10, 10), "modified image", font=font)
     
-        # Сохраняем модифицированное изображение
         bio = BytesIO()
         image.save(bio, 'PNG')
         bio.seek(0)
     
-        # Отправляем модифицированное изображение пользователю
         await message.answer_photo(types.BufferedInputFile(bio.read(), 'img.png'))
 
     @dp.message()
