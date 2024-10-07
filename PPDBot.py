@@ -55,24 +55,25 @@ async def main():
 
     @dp.message(F.photo)
     async def modify_image(message: types.Message):
-        await message.answer(f"Get this")
+        if (message.chat.type == 'private'):
+            await message.answer(f"Get this")
+            
+            bio1 = BytesIO()
+            bio1.name = 'image.png'
+            await message.bot.download(message.photo[-1], bio1)
+            bio1.seek(0)
 
-        bio1 = BytesIO()
-        bio1.name = 'image.png'
-        await message.bot.download(message.photo[-1], bio1)
-        bio1.seek(0)
+            image = Image.open(bio1)
+
+            draw = ImageDraw.Draw(image)
+            font = ImageFont.truetype('arial.ttf', 36)
+            draw.text((10, 10), "modified image", font=font)
+
+            bio = BytesIO()
+            image.save(bio, 'PNG')
+            bio.seek(0)
     
-        image = Image.open(bio1)
-    
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype('arial.ttf', 36)
-        draw.text((10, 10), "modified image", font=font)
-    
-        bio = BytesIO()
-        image.save(bio, 'PNG')
-        bio.seek(0)
-    
-        await message.answer_photo(types.BufferedInputFile(bio.read(), 'img.png'))
+            await message.answer_photo(types.BufferedInputFile(bio.read(), 'img.png'))
 
     @dp.message()
     async def handle_request_chat(message: types.Message):
